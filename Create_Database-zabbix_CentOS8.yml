@@ -1,0 +1,29 @@
+- name: Create Database from Zabbix-server
+  hosts: all
+  become: yes
+
+    task:
+      - name: Create user zabbix
+        postgresql_user:
+          db: postgres
+          name: zabbix
+          password: zabbix
+          priv: "ALL"
+          state: present
+        
+      - name: Create Database "zabbix"
+        postgresql_db:
+          name: zabbix
+          owner: zabbix
+          state: present
+
+      - name: Grant all privileges on DB zabbix
+        postgresql_privs:
+          db: zabbix
+          priv: all
+          type: Database
+          role: zabbix
+          state: present
+
+      - name: Import schema and data on Database
+        command: zcat /usr/share/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix

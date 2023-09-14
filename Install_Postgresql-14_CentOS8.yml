@@ -1,0 +1,28 @@
+- name: Deploy PostgreSQL-14 from CentOS8
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install PostgreSQL-14 repo
+      dnf:
+        name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+        state: present
+    
+    - name: Install PostgreSQL-14
+      dnf:
+        name: postgresql14-server
+        state: latest
+
+    - name: Initialize and Start PostgreSQL 14 Database Service
+      command: sudo /usr/pgsql-14/bin/postgresql-14-setup initdb
+
+    - name: The PostgreSQL 14 restarted
+      service:
+       name: postgresql-14
+       state: restarted
+
+    - name: Enabled PostgreSQL-14
+      service:
+        name: postgresql-14
+        enabled: yes
+        
